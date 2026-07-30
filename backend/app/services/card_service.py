@@ -66,17 +66,31 @@ def create_card(db: Session, project_id: int, payload: CardCreate) -> Card:
     return _get_card_or_raise(db, card.id)
 
 
-def list_cards(db: Session, project_id: int) -> list[Card]:
-    """Return all cards for a project, ordered by id."""
-    get_project(db, project_id)
-    stmt = (
-        select(Card)
-        .where(Card.project_id == project_id)
-        .order_by(Card.id)
-        .options(*_load_options())
-    )
-    return list(db.scalars(stmt).unique())
+def list_cards(
+    db: Session,
+    project_id: int,
+    *,
+    assignee: str | None = None,
+    status: CardStatus | None = None,
+) -> list[Card]:
+    """List cards in a project, optionally filtered by assignee name and status."""
+    # Preserve the existing not-found behaviour for a missing project.
+    get_project(db, project_id)   # your existing helper
 
+    stmt = select(Card).where(Card.project_id == project_id)
+    if assignee is not None:
+        if assignee == "unassigned":
+            stmt = stmt.where(Card.assignee_id.is_(None))
+        else:
+            user = db.scalar(select(User).where(User.name == assignee))
+            if user is None:
+                raise NotFoundError(f"No user named {assignee!r}")
+            stmt = stmt.where(Card.assignee_id == user.id)
+
+    if status is not None:
+        stmt = stmt.where(Card.status == status)
+
+    return list(db.scalars(stmt).all())
 
 def get_card(db: Session, card_id: int) -> Card:
     """Return a single card or raise NotFoundError."""
