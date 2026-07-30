@@ -37,12 +37,18 @@ def list_users(db: Session) -> list[User]:
 
 
 def get_user(db: Session, user_id: int) -> User:
-    """Return a single user or raise NotFoundError."""
-    user = db.get(User, user_id)
+    """Return a single user by id or raise NotFoundError."""
+    user = db.get(User, user_id)          # db.get() by PK is correct here
     if user is None:
         raise NotFoundError(f"User {user_id} not found")
     return user
 
+def get_user_by_email(db: Session, email: str) -> User:
+    """Return a single user by email or raise NotFoundError."""
+    user = db.scalar(select(User).where(User.email == email))
+    if user is None:
+        raise NotFoundError(f"User with email {email!r} not found")
+    return user
 
 def update_user(db: Session, user_id: int, payload: UserUpdate) -> User:
     """Apply a partial update to a user."""

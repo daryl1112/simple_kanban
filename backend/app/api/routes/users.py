@@ -22,8 +22,16 @@ def create_user(payload: UserCreate, db: Session = Depends(get_db)) -> UserRead:
 
 
 @router.get("", response_model=list[UserRead])
-def list_users(db: Session = Depends(get_db)) -> list[UserRead]:
-    """List all users."""
+def list_users(
+    email: str | None = None,
+    db: Session = Depends(get_db),
+) -> list[UserRead]:
+    """List users, optionally filtered by exact email."""
+    if email is not None:
+        try:
+            return [user_service.get_user_by_email(db, email)]
+        except NotFoundError:
+            return []
     return user_service.list_users(db)
 
 
@@ -34,7 +42,6 @@ def get_user(user_id: int, db: Session = Depends(get_db)) -> UserRead:
         return user_service.get_user(db, user_id)
     except NotFoundError as exc:
         raise http_error_from_domain(exc) from exc
-
 
 @router.patch("/{user_id}", response_model=UserRead)
 def update_user(user_id: int, payload: UserUpdate, db: Session = Depends(get_db)) -> UserRead:
