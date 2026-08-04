@@ -2,8 +2,8 @@
 
 An in-house, Trello-style Kanban tool for software development. Create projects,
 work cards across five columns (Backlog → Approved → In Progress → Review →
-Completed), assign owners, declare dependencies between cards, and leave
-Markdown comments. **Every action is available both in the UI and via the REST
+Completed), assign owners, declare dependencies between cards, track sub-tasks with
+checklists, and leave Markdown comments. **Every action is available both in the UI and via the REST
 API** — the UI is simply a client of that API.
 
 ## Architecture
@@ -46,6 +46,7 @@ Then open:
 | Project     | Owns a board. Markdown description.                              |
 | Card        | title, Markdown description, status, optional assignee.         |
 | Dependency  | Card → card, same project, **acyclic (server-enforced)**.       |
+| Checklist   | Named task list on a card; items have completable checkboxes.   |
 | Comment     | Markdown body on a card, optional author.                       |
 | User        | A person a card can be assigned to (no auth — in-house tool).    |
 
@@ -60,6 +61,9 @@ Then open:
 | Add dependency      | `POST /cards/{id}/dependencies`             |
 | Remove dependency   | `DELETE /cards/{id}/dependencies/{dep_id}`  |
 | Comment on a card   | `POST /cards/{id}/comments`                 |
+| Add a checklist     | `POST /cards/{id}/checklists`               |
+| Add a checklist item| `POST /checklists/{id}/items`               |
+| Toggle an item      | `PATCH /checklist-items/{id}`               |
 
 Full, interactive documentation is generated automatically at `/docs`.
 

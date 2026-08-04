@@ -2,9 +2,10 @@
 
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, computed_field
 
 from app.models.card_status import CardStatus
+from app.schemas.checklist import ChecklistRead
 from app.schemas.comment import CommentRead
 
 
@@ -43,8 +44,21 @@ class CardRead(BaseModel):
     assignee_id: int | None
     dependency_ids: list[int] = []
     comments: list[CommentRead] = []
+    checklists: list[ChecklistRead] = []
     created_at: datetime
     updated_at: datetime
+
+    @computed_field  # total checklist items across the card (board badge denominator)
+    @property
+    def checklist_items_total(self) -> int:
+        return sum(len(cl.items) for cl in self.checklists)
+
+    @computed_field  # completed checklist items across the card (badge numerator)
+    @property
+    def checklist_items_completed(self) -> int:
+        return sum(
+            1 for cl in self.checklists for item in cl.items if item.is_completed
+        )
 
 
 class BoardColumn(BaseModel):

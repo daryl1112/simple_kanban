@@ -7,6 +7,14 @@ from app.schemas.card import (
     CardRead,
     CardUpdate,
 )
+from app.schemas.checklist import (
+    ChecklistCreate,
+    ChecklistItemCreate,
+    ChecklistItemRead,
+    ChecklistItemUpdate,
+    ChecklistRead,
+    ChecklistUpdate,
+)
 from app.schemas.comment import CommentCreate, CommentRead
 from app.schemas.dependency import DependencyCreate
 from app.schemas.project import ProjectCreate, ProjectRead, ProjectUpdate
@@ -18,6 +26,12 @@ __all__ = [
     "CardCreate",
     "CardRead",
     "CardUpdate",
+    "ChecklistCreate",
+    "ChecklistItemCreate",
+    "ChecklistItemRead",
+    "ChecklistItemUpdate",
+    "ChecklistRead",
+    "ChecklistUpdate",
     "CommentCreate",
     "CommentRead",
     "DependencyCreate",

@@ -47,4 +47,6 @@ ESM dependency trees. The real packages are used at build and runtime.
 
 - Drag a card between columns to change its status (native HTML5 drag-and-drop).
 - Click a card to open its editor: title, Markdown description (with preview),
-  status, assignee, dependencies, and Markdown comments.
+  status, assignee, dependencies, checklists, and Markdown comments.
+- Add checklists of checkable items; each shows a progress bar, and the card
+  displays an aggregate progress badge on the board.

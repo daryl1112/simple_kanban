@@ -9,7 +9,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from app.core.logging import get_logger
-from app.models import Card, CardStatus, User
+from app.models import Card, CardStatus, Checklist, User
 from app.schemas import CardCreate, CardUpdate
 from app.schemas.card import BoardColumn, BoardRead, CardRead
 from app.services.errors import NotFoundError, ValidationError
@@ -20,7 +20,11 @@ logger = get_logger(__name__)
 
 def _load_options():
     """Eager-load relationships needed to serialise a card in one query set."""
-    return (selectinload(Card.dependencies), selectinload(Card.comments))
+    return (
+        selectinload(Card.dependencies),
+        selectinload(Card.comments),
+        selectinload(Card.checklists).selectinload(Checklist.items),
+    )
 
 
 def to_read_model(card: Card) -> CardRead:
@@ -66,31 +70,17 @@ def create_card(db: Session, project_id: int, payload: CardCreate) -> Card:
     return _get_card_or_raise(db, card.id)
 
 
-def list_cards(
-    db: Session,
-    project_id: int,
-    *,
-    assignee: str | None = None,
-    status: CardStatus | None = None,
-) -> list[Card]:
-    """List cards in a project, optionally filtered by assignee name and status."""
-    # Preserve the existing not-found behaviour for a missing project.
-    get_project(db, project_id)   # your existing helper
+def list_cards(db: Session, project_id: int) -> list[Card]:
+    """Return all cards for a project, ordered by id."""
+    get_project(db, project_id)
+    stmt = (
+        select(Card)
+        .where(Card.project_id == project_id)
+        .order_by(Card.id)
+        .options(*_load_options())
+    )
+    return list(db.scalars(stmt).unique())
 
-    stmt = select(Card).where(Card.project_id == project_id)
-    if assignee is not None:
-        if assignee == "unassigned":
-            stmt = stmt.where(Card.assignee_id.is_(None))
-        else:
-            user = db.scalar(select(User).where(User.name == assignee))
-            if user is None:
-                raise NotFoundError(f"No user named {assignee!r}")
-            stmt = stmt.where(Card.assignee_id == user.id)
-
-    if status is not None:
-        stmt = stmt.where(Card.status == status)
-
-    return list(db.scalars(stmt).all())
 
 def get_card(db: Session, card_id: int) -> Card:
     """Return a single card or raise NotFoundError."""

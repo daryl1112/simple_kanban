@@ -3,7 +3,7 @@ comment sub-resources are mounted in their own routers and included here."""
 
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
-from app.models import CardStatus
+
 from app.api.deps import http_error_from_domain
 from app.core.database import get_db
 from app.schemas import CardCreate, CardRead, CardUpdate
@@ -28,18 +28,10 @@ def create_card(project_id: int, payload: CardCreate, db: Session = Depends(get_
 
 
 @project_cards_router.get("", response_model=list[CardRead])
-def list_cards(
-    project_id: int,
-    assignee: str | None = None,
-    status: CardStatus | None = None,
-    db: Session = Depends(get_db),
-) -> list[CardRead]:
-    """List cards in a project, optionally filtered by assignee name and/or status."""
+def list_cards(project_id: int, db: Session = Depends(get_db)) -> list[CardRead]:
+    """List every card in a project."""
     try:
-        cards = card_service.list_cards(
-            db, project_id, assignee=assignee, status=status
-        )
-        return [to_read_model(c) for c in cards]
+        return [to_read_model(c) for c in card_service.list_cards(db, project_id)]
     except NotFoundError as exc:
         raise http_error_from_domain(exc) from exc
 

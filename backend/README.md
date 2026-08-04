@@ -58,4 +58,6 @@ required.
 - `POST /projects/{id}/cards`, `PATCH /cards/{id}` (move / assign / edit)
 - `POST /cards/{id}/dependencies` (cycle-checked), `DELETE /cards/{id}/dependencies/{dep_id}`
 - `POST /cards/{id}/comments` (Markdown), `DELETE /comments/{id}`
+- `POST /cards/{id}/checklists`, `PATCH`/`DELETE /checklists/{id}`
+- `POST /checklists/{id}/items`, `PATCH`/`DELETE /checklist-items/{id}`
 - `POST /users`, `GET /users`

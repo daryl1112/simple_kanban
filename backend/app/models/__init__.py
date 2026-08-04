@@ -7,6 +7,7 @@ and so `Base.metadata` sees all tables when creating the schema.
 from app.models.base import Base, TimestampMixin
 from app.models.card import Card, card_dependencies
 from app.models.card_status import CardStatus
+from app.models.checklist import Checklist, ChecklistItem
 from app.models.comment import Comment
 from app.models.project import Project
 from app.models.user import User
@@ -17,6 +18,8 @@ __all__ = [
     "Card",
     "card_dependencies",
     "CardStatus",
+    "Checklist",
+    "ChecklistItem",
     "Comment",
     "Project",
     "User",

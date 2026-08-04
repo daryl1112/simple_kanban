@@ -1,6 +1,11 @@
 """Route barrel: exposes every router for registration in `main`."""
 
 from app.api.routes.cards import cards_router, project_cards_router
+from app.api.routes.checklists import (
+    card_checklists_router,
+    checklist_items_router,
+    checklists_router,
+)
 from app.api.routes.comments import card_comments_router, comments_router
 from app.api.routes.dependencies import router as dependencies_router
 from app.api.routes.projects import router as projects_router
@@ -12,6 +17,9 @@ all_routers = [
     project_cards_router,
     cards_router,
     dependencies_router,
+    card_checklists_router,
+    checklists_router,
+    checklist_items_router,
     card_comments_router,
     comments_router,
     users_router,

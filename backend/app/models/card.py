@@ -47,6 +47,11 @@ class Card(Base, TimestampMixin):
     comments: Mapped[list["Comment"]] = relationship(  # noqa: F821
         back_populates="card", cascade="all, delete-orphan"
     )
+    checklists: Mapped[list["Checklist"]] = relationship(  # noqa: F821
+        back_populates="card",
+        cascade="all, delete-orphan",
+        order_by="Checklist.id",
+    )
 
     # Cards this card depends on (outgoing edges in the dependency graph).
     dependencies: Mapped[list["Card"]] = relationship(

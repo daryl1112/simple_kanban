@@ -36,6 +36,27 @@ export interface Comment {
   updated_at: string;
 }
 
+export interface ChecklistItem {
+  id: number;
+  checklist_id: number;
+  text: string;
+  is_completed: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Checklist {
+  id: number;
+  card_id: number;
+  title: string;
+  items: ChecklistItem[];
+  /** Derived on the server. */
+  completed_count: number;
+  total_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Card {
   id: number;
   project_id: number;
@@ -46,6 +67,10 @@ export interface Card {
   assignee_id: number | null;
   dependency_ids: number[];
   comments: Comment[];
+  checklists: Checklist[];
+  /** Aggregate item counts across all checklists (board badge). */
+  checklist_items_total: number;
+  checklist_items_completed: number;
   created_at: string;
   updated_at: string;
 }

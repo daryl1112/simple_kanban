@@ -4,3 +4,4 @@ export { Board } from "./Board";
 export { Column } from "./Column";
 export { CardItem } from "./CardItem";
 export { CardModal } from "./CardModal";
+export { Checklist } from "./Checklist";

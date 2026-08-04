@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 
-import { cardsApi, commentsApi, dependenciesApi } from "@/lib/api";
+import { cardsApi, checklistsApi, commentsApi, dependenciesApi } from "@/lib/api";
 import type { Card, User } from "@/lib/types";
 import { STATUS_LABELS } from "@/lib/constants";
 import { STATUS_ORDER } from "@/lib/constants";
 import { Button, Markdown, Modal } from "@/components/common";
+import { Checklist } from "./Checklist";
 
 interface CardModalProps {
   card: Card;
@@ -20,8 +21,8 @@ interface CardModalProps {
 
 /**
  * Detailed editor for a single card: title, Markdown description, status,
- * assignee, dependencies, and Markdown comments. Each control persists via the
- * API and then asks the parent to refresh.
+ * assignee, dependencies, checklists, and Markdown comments. Each control
+ * persists via the API and then asks the parent to refresh.
  */
 export function CardModal({ card, allCards, users, onClose, onChanged }: CardModalProps) {
   const [title, setTitle] = useState(card.title);
@@ -29,6 +30,7 @@ export function CardModal({ card, allCards, users, onClose, onChanged }: CardMod
   const [previewDesc, setPreviewDesc] = useState(false);
   const [newComment, setNewComment] = useState("");
   const [dependsOn, setDependsOn] = useState<number | "">("");
+  const [newChecklist, setNewChecklist] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   // Re-sync local fields if a different card is opened into the same modal.
@@ -174,6 +176,41 @@ export function CardModal({ card, allCards, users, onClose, onChanged }: CardMod
           }
         >
           Add
+        </Button>
+      </div>
+
+      <label className="field-label">Checklists</label>
+      {card.checklists.length === 0 && <p className="muted">No checklists yet.</p>}
+      {card.checklists.map((checklist) => (
+        <Checklist key={checklist.id} checklist={checklist} onAction={run} />
+      ))}
+      <div className="field-row">
+        <input
+          className="input"
+          placeholder="New checklist title"
+          aria-label="New checklist title"
+          value={newChecklist}
+          onChange={(e) => setNewChecklist(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && newChecklist.trim()) {
+              run(async () => {
+                await checklistsApi.createChecklist(card.id, { title: newChecklist.trim() });
+                setNewChecklist("");
+              });
+            }
+          }}
+        />
+        <Button
+          variant="ghost"
+          disabled={!newChecklist.trim()}
+          onClick={() =>
+            run(async () => {
+              await checklistsApi.createChecklist(card.id, { title: newChecklist.trim() });
+              setNewChecklist("");
+            })
+          }
+        >
+          Add checklist
         </Button>
       </div>
 

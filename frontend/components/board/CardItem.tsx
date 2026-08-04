@@ -46,9 +46,23 @@ export function CardItem({ card, assignee, onOpen, onDragStart }: CardItemProps)
       <p className="card-item__title">{card.title}</p>
       <div className="card-item__meta">
         <span>{assignee ? assignee.name : "Unassigned"}</span>
-        {card.comments.length > 0 && (
-          <span className="mono">💬 {card.comments.length}</span>
-        )}
+        <span className="card-item__badges">
+          {card.checklist_items_total > 0 && (
+            <span
+              className={
+                card.checklist_items_completed === card.checklist_items_total
+                  ? "mono chip chip--done"
+                  : "mono chip"
+              }
+              title="Checklist progress"
+            >
+              ☑ {card.checklist_items_completed}/{card.checklist_items_total}
+            </span>
+          )}
+          {card.comments.length > 0 && (
+            <span className="mono">💬 {card.comments.length}</span>
+          )}
+        </span>
       </div>
     </div>
   );

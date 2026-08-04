@@ -2,6 +2,7 @@
 
 from app.services import (
     card_service,
+    checklist_service,
     comment_service,
     dependency_service,
     project_service,
@@ -11,6 +12,7 @@ from app.services.errors import NotFoundError, ValidationError
 
 __all__ = [
     "card_service",
+    "checklist_service",
     "comment_service",
     "dependency_service",
     "project_service",
